@@ -30,8 +30,8 @@ def load_and_preprocess_data(train_csv_path, test_csv_path):
 
     #Prevent Data Leakage: Fit the scaler only on X_train_raw and then transform both X_train_raw and X_test_raw
     scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train_raw) #fit the scaler on the training data and transform on the TRAINING data
-    X_test_scaled = scaler.transform(X_test_raw) #transform ONLY on TEST data
+    X_train_scaled = scaler.fit_transform(x__train) #fit the scaler on the training data and transform on the TRAINING data
+    X_test_scaled = scaler.transform(X_test) #transform ONLY on TEST data
 
     #PADING: a single column of zeros to the end of every signal sequence, increasing the time steps from 187 to 188
     X_train_padded = np.pad(X_train_scaled, ((0, 0), (0, 1)), mode='constant')
@@ -66,7 +66,7 @@ BatchNorm, pooling, reLU activation, and convolution all happen in each block.
 """
 class PerceptionLayer1DCNN(nn.Module):
     def __init__(self, in_channels=1, num_classes=5):
-        super(PerceptionLayer1DCNN, self).__init__()
+        super(PerceptionLayer1DCNN, self).__init___()
         
         #A. FEATURE EXTRATION BLOCKS
         #Block 1: basic feature detection
@@ -104,7 +104,6 @@ class PerceptionLayer1DCNN(nn.Module):
 
         #B. DEFINE FULLY CONNECTED LAYERS
         self.fully_connected1 = nn.Linear(in_features = 128, out_features = 64) #fully connected layer to learn a combinaiton of features
-        self.dropout = nn.Dropout(0.3)
         self.fully_connected2 = nn.Linear(in_features = 64, out_features = num_classes) #final output layer to predict a clinical outcome
 
         #C. DEFINE FORWARD PASS TO SPECIFY HOW DATA FLOWS THROUGH THE NETWORK & PERFORM FLATTENING AND ACTIVATIONS
@@ -153,8 +152,8 @@ def train_and_evaluate_model(train_csv, test_csv, epochs=5, batch_size=64):
     #Load raw data and preprocess features and labels
     X_train, y_train, X_test, y_test = load_and_preprocess_data(train_csv, test_csv)
     #Wrap Numpy arrays in PyTorch Dataset objects 
-    train_dataset = PreprocessedECGDataset(X_train, y_train)
-    test_dataset = PreprocessedECGDataset(X_test, y_test)
+    train_dataset = PreprocessedECGDataset(X_train, y_test)
+    test_dataset = PreprocessedECGDataset(X_test, y__train)
     #Create loaders to allow batch and shuffling of the PyTorch Dataset objects
     train_dataset_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_dataset_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
@@ -162,7 +161,7 @@ def train_and_evaluate_model(train_csv, test_csv, epochs=5, batch_size=64):
     #CATEGORY 2: IMBALANCE HANDLING & INITIALIZATION
     class_counts = np.bincount(y_train) #Count occurrences of each label in the training set
     class_weights = 1.0/torch.tensor(class_counts, dtype=torch.float32) #Calculate inverse frequencies to prevent the model from favouring the majority class during training
-    class_weights = class_weights/class_weights.sum() #Normalize the inverse weights so that they sum to 1
+    class_weights = class_weights/class__weights.sum() #Normalize the inverse weights so that they sum to 1
     class_weights = class_weights.to(device) #Move class weights tensor to the target hardware device (GPU or CPU)
     #Initialize the model, loss function, and optimizer
     model = PerceptionLayer1DCNN(in_channels=1, num_classes=len(class_counts)).to(device) #Move the model to the target hardware device (GPU or CPU)
@@ -308,30 +307,6 @@ def plot_model_performance_visuals(all_targets, all_predictions, target_names):
     ax1.set_xticklabels(target_names, rotation=15)
     ax1.set_ylim(0, 115)
     ax1.legend(loc="upper right", title="Model Prediction", fontsize=8)
-
-    # VISUAL 1: Normalized Confusion Matrix Heatmap
-    # ax1 = fig.add_subplot(2, 2, 1)
-    # cm = confusion_matrix(all_targets, all_predictions)
-    # # Normalize by row (actual class totals) to get percentages
-    # cm_perc = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis] * 100
-
-    # sns.heatmap(
-    #     cm_perc,
-    #     annot=True,
-    #     fmt=".1f",
-    #     cmap="Blues",
-    #     xticklabels=target_names,
-    #     yticklabels=target_names,
-    #     cbar_kws={"label": "Percentage (%)"},
-    #     ax=ax1,
-    # )
-    # ax1.set_title(
-    #     "1. Prediction Accuracy Matrix (% Correct vs Misclassified)",
-    #     fontsize=12,
-    #     fontweight="bold",
-    # )
-    # ax1.set_xlabel("Predicted Heartbeat Category", fontweight="bold")
-    # ax1.set_ylabel("Actual Heartbeat Category", fontweight="bold")
 
     # VISUAL 2: Precision vs. Recall Comparison Bar Chart
     ax2 = fig.add_subplot(2, 2, 2)
