@@ -5,3 +5,4 @@ Heart attacks occur suddenly without warning, causing tremendous distress to pat
 
 ## The WHAT
 This project is a heartbeat classifier to detect abnormal heartbeats that signal poor heart health, such as arrhythmias. I used the MIT-BIH dataset to train my model. The model takes raw ECG signal (waveform) data and predicts what a heartbeat likely signals among these 5 categories: "Normal", "Supraventricular", "Ventricular", "Fusion", and "Unknown". 
+(Dataset link: https://www.kaggle.com/datasets/shayanfazeli/heartbeat)
